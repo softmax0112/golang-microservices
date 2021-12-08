@@ -7,8 +7,8 @@ import (
 	"log"
 	"time"
 
-	database "github.com/KernelGamut32/golang-microservices/labs/toyshop/internal/db"
-	"github.com/KernelGamut32/golang-microservices/labs/toyshop/internal/users"
+	"github.com/KernelGamut32/golang-microservices/demos/toyshop/internal/users"
+	database "github.com/KernelGamut32/golang-microservices/demos/toyshop/internal/db"
 
 	"golang.org/x/crypto/bcrypt"
 )
