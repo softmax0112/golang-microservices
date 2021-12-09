@@ -3,8 +3,8 @@ package routes
 import (
 	"net/http"
 
-	toysService "github.com/KernelGamut32/golang-microservices/demos/toyshop/internal/toys/service"
-	"github.com/KernelGamut32/golang-microservices/demos/toyshop/internal/toys/auth"
+	"github.com/KernelGamut32/golang-microservices/demos/users/internal/users/auth"
+	usersService "github.com/KernelGamut32/golang-microservices/demos/users/internal/users/service"
 	"github.com/gorilla/mux"
 )
 
@@ -13,16 +13,14 @@ func Handlers() *mux.Router {
 
 	r.Use(CommonMiddleware)
 
-	ts := toysService.Get()
-	av := auth.GetAuthVerifier()
+	us := usersService.Get()
+	jv := auth.GetAuthenticator()
 
+	r.HandleFunc("/register", us.CreateUser).Methods("POST")
+	r.HandleFunc("/login", us.Login).Methods("POST")
 	s := r.PathPrefix("/auth").Subrouter()
-	s.Use(av.VerifyAuth)
-	s.HandleFunc("/toys", ts.GetAllToys).Methods("GET")
-	s.HandleFunc("/toys/{id}", ts.GetToy).Methods("GET")
-	s.HandleFunc("/toys", ts.CreateToy).Methods("POST")
-	s.HandleFunc("/toys/{id}", ts.UpdateToy).Methods("PUT")
-	s.HandleFunc("/toys/{id}", ts.DeleteToy).Methods("DELETE")
+	s.Use(jv.JwtVerify)
+	s.HandleFunc("/verify", us.VerifyAuth).Methods("GET")
 
 	return r
 }

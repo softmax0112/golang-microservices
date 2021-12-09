@@ -68,14 +68,13 @@ func createAndOpen(name string, dbURI string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS toys (
-						id int NOT NULL AUTO_INCREMENT,
-						product_number varchar(10) NOT NULL,
-						name varchar(25) NOT NULL,
-						description varchar(100) NOT NULL,
-						unit_cost decimal(4, 2) NOT NULL,
-						PRIMARY KEY (id)
-					);`)
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS users (
+		id int NOT NULL AUTO_INCREMENT,
+		name varchar(100) NOT NULL,
+		email varchar(100) NOT NULL,
+		password varchar(100) NOT NULL,
+		PRIMARY KEY (id)
+	);`)
 	if err != nil {
 		return nil, err
 	}
@@ -99,6 +98,6 @@ func connectDB() *sql.DB {
 		log.Fatalf(err.Error())
 	}
 
-	log.Println("Successfully connected to toys db!")
+	log.Println("Successfully connected to users db!")
 	return db
 }
