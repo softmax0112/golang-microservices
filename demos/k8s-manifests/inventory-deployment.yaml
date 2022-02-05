@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: inventory-config
+data:
+  MYSQL_USERNAME: "root"
+  MYSQL_SERVICE_HOST: "toyshop-mysql"
+  MYSQL_DATABASE: "inventory_db"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-svc
+  labels:
+    app: inventory-svc
+spec:
+  ports:
+    - port: 5100
+  selector:
+    app: inventory-svc
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: inv-pv-claim
+  labels:
+    app: inventory-svc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-svc
+  labels:
+    app: inventory-svc
+spec:
+  selector:
+    matchLabels:
+      app: inventory-svc
+  template:
+    metadata:
+      labels:
+        app: inventory-svc
+    spec:
+      containers:
+      - image: gamuttechsvcsllc/inventory-svc:1.0
+        name: inventory-svc
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        env:
+        - name: MYSQL_USERNAME
+          valueFrom:
+            configMapKeyRef:              
+              name: inventory-config
+              key: MYSQL_USERNAME
+        - name: MYSQL_SERVICE_HOST
+          valueFrom:
+            configMapKeyRef:              
+              name: inventory-config
+              key: MYSQL_SERVICE_HOST
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: toyshop-pass
+              key: password
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:              
+              name: inventory-config
+              key: MYSQL_DATABASE
+        ports:
+        - containerPort: 5100
+          name: inventory-svc

@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: toyshop-config
+data:
+  MYSQL_USERNAME: "root"
+  MYSQL_SERVICE_HOST: "toyshop-mysql"
+  MYSQL_DATABASE: "toyshop_db"
+  AUTH_ENDPOINT: "http://users-svc:5050/auth/verify"
+  INV_ENDPOINT: "http://inventory-svc:5100/inventory"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: toyshop-svc
+  labels:
+    app: toyshop-svc
+spec:
+  ports:
+    - port: 5000
+  selector:
+    app: toyshop-svc
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ts-pv-claim
+  labels:
+    app: toyshop-svc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toyshop-svc
+  labels:
+    app: toyshop-svc
+spec:
+  selector:
+    matchLabels:
+      app: toyshop-svc
+  template:
+    metadata:
+      labels:
+        app: toyshop-svc
+    spec:
+      containers:
+      - image: gamuttechsvcsllc/toyshop-svc:1.0
+        name: toyshop-svc
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        env:
+        - name: MYSQL_USERNAME
+          valueFrom:
+            configMapKeyRef:              
+              name: toyshop-config
+              key: MYSQL_USERNAME
+        - name: MYSQL_SERVICE_HOST
+          valueFrom:
+            configMapKeyRef:              
+              name: toyshop-config
+              key: MYSQL_SERVICE_HOST
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: toyshop-pass
+              key: password
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:              
+              name: toyshop-config
+              key: MYSQL_DATABASE
+        - name: AUTH_ENDPOINT
+          valueFrom:
+            configMapKeyRef:              
+              name: toyshop-config
+              key: AUTH_ENDPOINT
+        - name: INV_ENDPOINT
+          valueFrom:
+            configMapKeyRef:              
+              name: toyshop-config
+              key: INV_ENDPOINT
+        ports:
+        - containerPort: 5000
+          name: toyshop-svc

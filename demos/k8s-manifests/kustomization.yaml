@@ -1,0 +1,9 @@
+secretGenerator:
+- name: toyshop-pass
+  literals:
+  - password=pass123
+resources:
+- mysql-deployment.yaml
+- users-deployment.yaml
+- toyshop-deployment.yaml
+- inventory-deployment.yaml

@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: users-config
+data:
+  MYSQL_USERNAME: "root"
+  MYSQL_SERVICE_HOST: "toyshop-mysql"
+  MYSQL_DATABASE: "users_db"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-svc
+  labels:
+    app: users-svc
+spec:
+  ports:
+    - port: 5050
+  selector:
+    app: users-svc
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: us-pv-claim
+  labels:
+    app: users-svc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-svc
+  labels:
+    app: users-svc
+spec:
+  selector:
+    matchLabels:
+      app: users-svc
+  template:
+    metadata:
+      labels:
+        app: users-svc
+    spec:
+      containers:
+      - image: gamuttechsvcsllc/users-svc:1.0
+        name: users-svc
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        env:
+        - name: MYSQL_USERNAME
+          valueFrom:
+            configMapKeyRef:              
+              name: users-config
+              key: MYSQL_USERNAME
+        - name: MYSQL_SERVICE_HOST
+          valueFrom:
+            configMapKeyRef:              
+              name: users-config
+              key: MYSQL_SERVICE_HOST
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: toyshop-pass
+              key: password
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:              
+              name: users-config
+              key: MYSQL_DATABASE
+        ports:
+        - containerPort: 5050
+          name: users-svc

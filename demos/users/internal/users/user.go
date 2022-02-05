@@ -2,8 +2,6 @@ package users
 
 import "net/http"
 
-// This should actually be pulled into a separate package
-// since used from multiple locations
 type User struct {
 	ID       uint   `json:"id"`
 	Name     string `json:"name"`

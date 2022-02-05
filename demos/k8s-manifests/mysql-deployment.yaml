@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: toyshop-mysql
+  labels:
+    app: toyshop
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: toyshop
+    tier: mysql
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-ts-claim
+  labels:
+    app: toyshop
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toyshop-mysql
+  labels:
+    app: toyshop
+spec:
+  selector:
+    matchLabels:
+      app: toyshop
+      tier: mysql
+  template:
+    metadata:
+      labels:
+        app: toyshop
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql
+        name: mysql
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: toyshop-pass
+              key: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-ts-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-ts-storage
+        persistentVolumeClaim:
+          claimName: mysql-ts-claim
