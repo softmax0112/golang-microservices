@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "http://localhost:5000/register",
+			"name": "http://localhost:5050/register",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -37,7 +37,7 @@
 			"response": []
 		},
 		{
-			"name": "http://localhost:5000/login",
+			"name": "http://localhost:5050/login",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -260,6 +260,55 @@
 					"path": [
 						"auth",
 						"toys",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:5100/inventory/GHIJKL999",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5100/inventory/GHIJKL999",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5100",
+					"path": [
+						"inventory",
+						"GHIJKL999"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:5100/inventory/1",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 1,\r\n    \"productNumber\": \"GHIJKL999\",\r\n    \"quantity\": 42\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5100/inventory/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5100",
+					"path": [
+						"inventory",
 						"1"
 					]
 				}
