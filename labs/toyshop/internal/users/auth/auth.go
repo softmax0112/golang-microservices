@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/KernelGamut32/golang-microservices/labs/toyshop/internal/users"
+	"<go module name>/internal/users"
 	jwt "github.com/golang-jwt/jwt"
 )
 

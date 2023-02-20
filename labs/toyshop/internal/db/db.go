@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Use `docker run -p 3306:3306 -p 33060:33060 --name mysqldb -v ~/mysql:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=pass -d mysql` to create DB
+// Use `docker run -p 3306:3306 -p 33060:33060 --name mysqldb -v ~/mysql:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=password123 -d mysql` to create DB
 
 var db *sql.DB
 
